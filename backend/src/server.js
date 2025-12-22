@@ -1,15 +1,26 @@
-import 'dotenv/config';
+// src/server.js
 import express from 'express';
-import db from './db.js';
+import dotenv from 'dotenv';
+import { initDB } from './db.js';
+import authRoutes from './routes/authRoutes.js';
 
-const app = express();
-app.use(express.json());
+dotenv.config();
 
-app.get('/', (req, res) => {
-  res.send('Backend is running');
-});
+export async function createServer() {
+  await initDB();
+  const app = express();
+  app.use(express.json());
+  app.use('/register', authRoutes);
+  return app;
+}
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// Lancer le serveur uniquement si ce n'est pas un test
+export async function startServer() {
+  const app = await createServer();
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
+
+if (process.env.NODE_ENV !== 'test') {
+  startServer();
+}
