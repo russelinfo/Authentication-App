@@ -10,7 +10,7 @@ export async function createServer() {
   await initDB();
   const app = express();
   app.use(express.json());
-  app.use('/register', authRoutes);
+  app.use('/register', authRoutes);  
   return app;
 }
 

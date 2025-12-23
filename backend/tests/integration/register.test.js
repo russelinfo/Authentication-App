@@ -11,8 +11,12 @@ beforeAll(async () => {
   app = await createServer();
 });
 
+beforeEach(async () => {
+  await db.query('DELETE FROM users');
+});
+
 afterAll(async () => {
-  if (db) await db.end(); // ferme la connexion MySQL
+  if (db) await db.end();
 });
 
 describe('POST /register', () => {
@@ -26,6 +30,10 @@ describe('POST /register', () => {
   });
 
   test('Échec si email déjà utilisé', async () => {
+    await request(app)
+      .post('/register')
+      .send({ email: 'integration@example.com', password: 'Abcdef1!' });
+
     const response = await request(app)
       .post('/register')
       .send({ email: 'integration@example.com', password: 'Abcdef1!' });
